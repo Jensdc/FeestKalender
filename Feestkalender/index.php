@@ -15,9 +15,6 @@ require_once('Facebook/HttpClients/FacebookCurlHttpClient.php');
 require_once('Facebook/Entities/AccessToken.php');
 require_once('Facebook/GraphUser.php');
 
-
-
-
 //require_once('autoload.php');
 
 use Facebook\FacebookSession;
