@@ -75,8 +75,11 @@ $i = 0;
                 try {
                     // Logged in
 
-                    $request = new FacebookRequest($session, 'GET', '/search?q="Gent"&type=event&fields=id&since=1426546837&until=1427752837');
-
+                    //$request = new FacebookRequest($session, 'GET', '/search?q="Gent"&type=event&fields=id&since=1426546837&until=1427752837'); //-1 week +1 week
+                    //-1 day +1day
+                    //1427152911 //-
+                    //1427325711 //+
+$request = new FacebookRequest($session, 'GET', '/search?q="Gent"&type=event&fields=id&since=1427152911&until=1427325711');
                     $response = $request->execute();
                     $graphObject = $response->getGraphObject();
                     $graphObject = $graphObject->asArray();
