@@ -39,7 +39,7 @@ FacebookSession::setDefaultApplication($app_id, $app_secret);
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>Facebook SDK examples</title>
+        <title>Feestkalender</title>
     </head>
     <body>
         <?php
