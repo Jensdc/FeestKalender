@@ -112,14 +112,30 @@ echo "</pre>";
 //                                $misschien = count($graphObjectMA, COUNT_RECURSIVE); // tellen.
                                 //echo $eventNaam . " " . $eventID . "<br />";
                                 //Details evenement ophalen. (Momenteel enkel description, later ook locatie ed.)
-                                $requestPrivacy = new FacebookRequest($session, 'GET', '/' . $eventID .'?fields=name,location,attending_count,maybe_count');
+                                $requestPrivacy = new FacebookRequest($session, 'GET', '/' . $eventID .'?fields=name,location,attending_count,maybe_count,start_time');
                                 $responsePrivacy = $requestPrivacy->execute();
                                 $graphObjectPR = $responsePrivacy->getGraphObject();
                                 $graphObjectPR = $graphObjectPR->asArray();
-
-                                                        echo "<pre>";
-print_r($graphObjectPR);
-echo "</pre>";
+                                $aanwezig = $graphObjectPR["attending_count"];
+                                $misschien = $graphObjectPR["maybe_count"];
+                                $naam = $graphObjectPR["name"];
+                                $loc = $graphObjectPR["location"];
+                                $start = $graphObjectPR["start_time"];
+                                
+                                echo "Naam :" . $naam;
+                                echo "<br />";
+                                echo "Locatie: " . $loc;
+                                echo "<br />";
+                                echo "Start: " . $start;
+                                echo "<br />";
+                                echo "Aanwezigen: " . $aanwezig;
+                                echo "<br />";
+                                echo "Misschien :" . $misschien;
+                                echo "<br />";
+                                
+//                                                        echo "<pre>";
+//print_r($graphObjectPR);
+//echo "</pre>";
 
                                 //$beschrijving = $graphObjectPR['description'];
                                // echo $eventID . "Naam: " . $eventNaam . "<br />";
