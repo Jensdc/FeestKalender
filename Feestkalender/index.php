@@ -14,9 +14,11 @@ require_once('Facebook/HttpClients/FacebookHttpable.php');
 require_once('Facebook/HttpClients/FacebookCurlHttpClient.php');
 require_once('Facebook/Entities/AccessToken.php');
 require_once('Facebook/GraphUser.php');
+require_once('Facebook/GraphSessionInfo.php');
 
 //require_once('autoload.php');
 
+use Facebook\GraphSessionInfo;
 use Facebook\FacebookSession;
 use Facebook\FacebookRedirectLoginHelper;
 use Facebook\FacebookRequest;
@@ -44,15 +46,28 @@ FacebookSession::setDefaultApplication($app_id, $app_secret);
     <body>
         <?php
         $helper = new FacebookRedirectLoginHelper("http://www.jensdc.com/kalender/", $app_id, $app_secret);
-        try {
-            $session = $helper->getSessionFromRedirect();
-        } catch (FacebookRequestException $ex) {
-            
-        } catch (\Exception $ex) {
-            
+        if (isset($_SESSION['fb_token'])) {
+            // use a saved access token - will get to this later
+            $session = new FacebookSession($_SESSION['fb_token']);
+            try {
+                if (!$session->validate()) {
+                    $session = null;
+                    $loggedIn = false;
+                }
+            } catch (Exception $e) {
+                $session = null;
+            }
+        } else {
+            try {
+                $session = $helper->getSessionFromRedirect();
+            } catch (FacebookRequestException $ex) {
+                
+            } catch (\Exception $ex) {
+                
+            }
         }
-
-        $loggedIn = false;
+$i = 0;
+       
 
         if (isset($session)) {
             if ($session) {
@@ -60,29 +75,29 @@ FacebookSession::setDefaultApplication($app_id, $app_secret);
                 try {
                     // Logged in
 
-                    $request = new FacebookRequest($session, 'GET', '/search?q=Gent&type=event&fields=id,name&since=1426546837&until=1427752837');
+                    $request = new FacebookRequest($session, 'GET', '/search?q="Gent"&type=event&fields=id&since=1426546837&until=1427752837');
 
                     $response = $request->execute();
                     $graphObject = $response->getGraphObject();
                     $graphObject = $graphObject->asArray();
-//echo "<pre>";
-//print_r($graphObject);
-//echo "</pre>";
+echo "<pre>";
+print_r($graphObject);
+echo "</pre>";
                     foreach ($graphObject as $k => $value) {
                         foreach ($value as $l => $lol) {
-                            if ($l >= 1) {
-                                $eventNaam = $graphObject["data"][$i]->{"name"};
+                            if ($l >= 0) {
+                                //$eventNaam = $graphObject["data"][$i]->{"name"};
                                 $eventID = $graphObject["data"][$i]->{"id"};
                                 settype($eventID, "integer");
                                 $teller++;
 
                                 // Aanwezige gasten
 
-                                $requestAttending = new FacebookRequest($session, 'GET', '/' . $eventID . '/attending' );
-                                $responseAt = $requestAttending->execute();
-                                $graphObjectat = $responseAt->getGraphObject();
-                                $graphObjectat = $graphObjectat->asArray();
-                                $aanwezig = count($graphObjectat, COUNT_RECURSIVE); // tellen.
+//                                $requestAttending = new FacebookRequest($session, 'GET', '/' . $eventID . '/attending');
+//                                $responseAt = $requestAttending->execute();
+//                                $graphObjectat = $responseAt->getGraphObject();
+//                                $graphObjectat = $graphObjectat->asArray();
+//                                $aanwezig = count($graphObjectat, COUNT_RECURSIVE); // tellen.
 //                                echo "<pre>";
 //                                print_r($graphObjectat);
 //
@@ -90,23 +105,25 @@ FacebookSession::setDefaultApplication($app_id, $app_secret);
 //                               
 //                                //Misschien aanwezige gasten
 //                                
-                                $requestMA = new FacebookRequest($session, 'GET', '/' . $eventID . '/maybe');
-                                $reponseMA = $requestMA->execute();
-                                $graphObjectMA = $reponseMA->getGraphObject();
-                                $graphObjectMA = $graphObjectMA->asArray();
-                                $misschien = count($graphObjectMA, COUNT_RECURSIVE); // tellen.
-                                
+//                                $requestMA = new FacebookRequest($session, 'GET', '/' . $eventID . '/maybe');
+//                                $reponseMA = $requestMA->execute();
+//                                $graphObjectMA = $reponseMA->getGraphObject();
+//                                $graphObjectMA = $graphObjectMA->asArray();
+//                                $misschien = count($graphObjectMA, COUNT_RECURSIVE); // tellen.
                                 //echo $eventNaam . " " . $eventID . "<br />";
                                 //Details evenement ophalen. (Momenteel enkel description, later ook locatie ed.)
-                                $requestPrivacy = new FacebookRequest($session, 'GET', '/' . $eventID);
+                                $requestPrivacy = new FacebookRequest($session, 'GET', '/' . $eventID .'?fields=name,location,attending_count,maybe_count');
                                 $responsePrivacy = $requestPrivacy->execute();
                                 $graphObjectPR = $responsePrivacy->getGraphObject();
                                 $graphObjectPR = $graphObjectPR->asArray();
 
+                                                        echo "<pre>";
+print_r($graphObjectPR);
+echo "</pre>";
 
-                                $beschrijving = $graphObjectPR['description'];
-                                echo "Naam: " . $eventNaam . "<br />";
-                                echo "Aantal aanwezig: " . $aanwezig . " Mogelijk aanwezig: " . $misschien . "<br />";
+                                //$beschrijving = $graphObjectPR['description'];
+                               // echo $eventID . "Naam: " . $eventNaam . "<br />";
+                                //echo "Aantal aanwezig: " . $aanwezig . " Mogelijk aanwezig: " . $misschien . "<br />";
                             }
 
                             $i++;
